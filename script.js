@@ -2,11 +2,19 @@
 function loadDataFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const data = urlParams.get('data');
+    const autoDownload = urlParams.get('auto');
     
     if (data) {
         try {
             const invoiceData = JSON.parse(decodeURIComponent(data));
             fillInvoiceForm(invoiceData);
+            
+            // Otomatik PDF indir
+            if (autoDownload === 'true') {
+                setTimeout(() => {
+                    generatePDF();
+                }, 1500); // 1.5 saniye bekle, sayfa yüklensin
+            }
         } catch (e) {
             console.error('Veri yükleme hatası:', e);
         }
