@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatura Oluşturucu</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for premium look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="split-layout">
+        <!-- SOL PANEL: Düzenleme Formu -->
+        <aside class="editor-pane">
+            <header class="app-header">
+                <h1>Fatura Oluşturucu</h1>
+                <p>Bilgileri girin, sağ tarafta önizleyin.</p>
+            </header>
+
+            <form id="invoiceForm" onsubmit="event.preventDefault();">
+                <!-- Düzenleyen Firma Bilgileri -->
+                <section class="card">
+                    <h2>Fatura Bilgileri</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="invoiceNo">Fatura No</label>
+                            <input type="text" id="invoiceNo" placeholder="Örn: SER2024001" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDate">Fatura Tarihi</label>
+                            <input type="date" id="invoiceDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="senderName">Düzenleyen Firma Adı</label>
+                        <input type="text" id="senderName" placeholder="Şirketinizin Adı" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="senderAddress">Düzenleyen Adres</label>
+                        <textarea id="senderAddress" rows="2" placeholder="Şirketinizin Adresi" required></textarea>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="senderPhone">Düzenleyen Telefon</label>
+                            <input type="tel" id="senderPhone" placeholder="0555 123 45 67">
+                        </div>
+                        <div class="form-group">
+                            <label for="senderTax">Düzenleyen Vergi No</label>
+                            <input type="text" id="senderTax" placeholder="Vergi No / T.C.">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Müşteri Bilgileri -->
+                <section class="card">
+                    <h2>Müşteri Bilgileri</h2>
+                    <div class="form-group">
+                        <label for="clientName">Müşteri Adı / Ünvanı</label>
+                        <input type="text" id="clientName" placeholder="Müşteri Adı" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientAddress">Adres</label>
+                        <textarea id="clientAddress" rows="2" placeholder="Müşteri Adresi"></textarea>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="clientPhone">Telefon</label>
+                            <input type="tel" id="clientPhone" placeholder="0555 987 65 43">
+                        </div>
+                        <div class="form-group">
+                            <label for="clientTax">Vergi No</label>
+                            <input type="text" id="clientTax" placeholder="Vergi No / T.C.">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ürün/Hizmet Listesi -->
+                <section class="card">
+                    <h2>Ürün ve Hizmetler</h2>
+                    <div id="itemsContainer">
+                        <!-- Satırlar JS ile buraya eklenecek -->
+                    </div>
+                    <button type="button" class="btn btn-outline" id="addItemBtn">+ Yeni Satır Ekle</button>
+                    <!-- Small instruction -->
+                    <p style="font-size: 0.8rem; color: #666; margin-top: 10px; font-style: italic;">* Birim fiyat ve KDV değişince toplamlar otomatik güncellenir.</p>
+                </section>
+
+                <div class="actions mobile-only-actions">
+                    <button type="button" class="btn btn-primary" onclick="document.querySelector('.preview-pane').scrollIntoView({behavior: 'smooth'})">Önizlemeyi Gör ↓</button>
+                </div>
+            </form>
+        </aside>
+
+        <!-- SAĞ PANEL: Canlı Önizleme -->
+        <main class="preview-pane">
+            <div class="preview-header-actions">
+                <h2>Fatura Önizleme</h2>
+                <button type="button" class="btn btn-primary" id="downloadBtn">PDF Olarak İndir</button>
+            </div>
+            
+            <div class="paper-wrapper">
+                <!-- PDF Template (Görünür halde) -->
+                <div id="pdf-template">
+                    <div class="pdf-container">
+                        <div class="pdf-header">
+                            <div class="pdf-sender-info">
+                                <h1 id="pdfSenderName">ŞİRKET ADI</h1>
+                                <p id="pdfSenderAddress">Adres Bilgisi</p>
+                                <p>Tel: <span id="pdfSenderPhone"></span> | V.No: <span id="pdfSenderTax"></span></p>
+                            </div>
+                            <div class="pdf-invoice-meta">
+                                <h2 class="invoice-title">FATURA</h2>
+                                <table>
+                                    <tr>
+                                        <td><strong>Fatura No:</strong></td>
+                                        <td id="pdfInvoiceNo"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tarih:</strong></td>
+                                        <td id="pdfInvoiceDate"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pdf-client-info">
+                            <h3>SAYIN:</h3>
+                            <p id="pdfClientName" class="client-name-bold"></p>
+                            <p id="pdfClientAddress"></p>
+                            <p>Tel: <span id="pdfClientPhone"></span> | V.No: <span id="pdfClientTax"></span></p>
+                        </div>
+
+                        <table class="pdf-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Açıklama</th>
+                                    <th class="text-right">Birim Fiyat</th>
+                                    <th class="text-center">Adet</th>
+                                    <th class="text-center">KDV %</th>
+                                    <th class="text-right">Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pdfItemsBody">
+                                <!-- JS ile dolacak -->
+                            </tbody>
+                        </table>
+
+                        <div class="pdf-totals">
+                            <table>
+                                <tr>
+                                    <td>Ara Toplam</td>
+                                    <td id="pdfSubtotal" class="text-right">0.00 ₺</td>
+                                </tr>
+                                <tr>
+                                    <td>KDV Toplam</td>
+                                    <td id="pdfVatTotal" class="text-right">0.00 ₺</td>
+                                </tr>
+                                <tr class="grand-total-row">
+                                    <td>GENEL TOPLAM</td>
+                                    <td id="pdfGrandTotal" class="text-right">0.00 ₺</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="pdf-footer">
+                            <p>İşbu fatura dijital olarak oluşturulmuştur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

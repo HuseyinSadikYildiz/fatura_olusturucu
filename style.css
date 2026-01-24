@@ -1,0 +1,389 @@
+:root {
+    --primary-color: #1A73E8;
+    --primary-light: #e8f0fe;
+    --border-color: #dadce0;
+    --text-color: #202124;
+    --text-secondary: #5f6368;
+    --bg-color: #f8f9fa;
+    --white: #ffffff;
+    --danger: #d93025;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+/* App Layout - Split Screen */
+.split-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Left: Editor Pane */
+.editor-pane {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background-color: var(--bg-color);
+    border-right: 1px solid var(--border-color);
+    max-width: 600px; /* Limit input width for readability */
+}
+
+/* Right: Preview Pane */
+.preview-pane {
+    flex: 1.5;
+    background-color: #525659; /* Standard PDF viewer background color */
+    padding: 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preview-header-actions {
+    width: 100%;
+    max-width: 210mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.preview-header-actions h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.paper-wrapper {
+    width: 210mm; /* A4 width */
+    min-height: 297mm; /* A4 height */
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    padding: 0; /* Let pdf-container handle internal padding */
+    margin-bottom: 2rem;
+}
+
+/* Mobile Responsiveness for Split Layout */
+@media (max-width: 1000px) {
+    .split-layout {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+    }
+    
+    .editor-pane {
+        max-width: 100%;
+        border-right: none;
+        overflow: visible;
+    }
+
+    .preview-pane {
+        width: 100%;
+        padding: 1rem;
+    }
+    
+    .paper-wrapper {
+        width: 100%;
+        max-width: 210mm;
+        min-height: auto; /* Allow flexible height on mobile if needed */
+        aspect-ratio: 210/297; 
+    }
+}
+
+.mobile-only-actions {
+    display: none;
+    margin-top: 1rem;
+}
+
+@media (max-width: 1000px) {
+    .mobile-only-actions {
+        display: block;
+    }
+}
+
+
+/* Existing Styles (Refined) */
+.app-header {
+    margin-bottom: 2rem;
+    /* text-align: left; Remove center align for sidebar look */
+}
+
+.app-header h1 {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.8rem;
+}
+
+/* Cards */
+.card {
+    background: var(--white);
+    border: 1px solid var(--border-color); /* Lighter border for clean look */
+    border-top: 3px solid var(--primary-color); /* Accent top */
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.card h2 {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Form Elements */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Items Table Row */
+.item-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+@media (min-width: 600px) {
+    .item-row {
+        grid-template-columns: 3fr 1fr 1fr 1fr auto;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0.5rem;
+        align-items: center;
+    }
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+    width: auto; /* Not full width by default anymore */
+}
+
+/* Specific button styles for actions */
+#downloadBtn {
+    width: auto;
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: 1px solid white;
+}
+#downloadBtn:hover {
+    background-color: var(--primary-light);
+}
+
+.actions button.btn-primary { /* Left side submit button hidden since we moved it right, but if we keep it for mobile or explicit save */
+    width: 100%;
+    display: none; /* Hide old generic submit button if it exists, since we have dedicated download button on right */
+}
+
+.btn-primary:hover {
+    background-color: #155cb0;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px dashed var(--primary-color);
+    color: var(--primary-color);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-light);
+}
+
+/* Totals - Hidden in left panel since it's redundant with preview now? 
+   Actually user might want to see it while typing without looking right. 
+   Let's keep it but make it simpler. */
+.totals-card {
+    background: var(--primary-light);
+    border: none;
+    padding: 1rem;
+}
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    font-size: 0.95rem;
+}
+.grand-total {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+
+/* PDF Template Styles (Visible in Preview Pane) */
+.pdf-container {
+    width: 100%;
+    height: 100%;
+    padding: 40px; /* Internal margin of the paper */
+    background: white;
+    font-family: 'Inter', sans-serif;
+    color: #000;
+    box-sizing: border-box;
+}
+
+.pdf-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.pdf-sender-info h1 {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.pdf-invoice-meta table {
+    text-align: right;
+}
+
+.pdf-invoice-meta td {
+    padding: 2px 5px;
+}
+
+.pdf-client-info {
+    margin-bottom: 40px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--primary-color);
+}
+
+.client-name-bold {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.pdf-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.pdf-items-table th {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.pdf-items-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.pdf-items-table .text-right { text-align: right; }
+.pdf-items-table .text-center { text-align: center; }
+
+.pdf-totals {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pdf-totals table {
+    width: 300px;
+}
+
+.pdf-totals td {
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
+.pdf-totals .grand-total-row td {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    border-top: 2px solid var(--primary-color);
+}
+
+.pdf-footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
