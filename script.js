@@ -80,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set default invoice date to today
     document.getElementById('invoiceDate').valueAsDate = new Date();
 
+    // Load saved invoice number if exists
+    const savedInvoiceNo = localStorage.getItem('nextInvoiceNo');
+    if (savedInvoiceNo) {
+        document.getElementById('invoiceNo').value = savedInvoiceNo;
+    }
+
     const itemsContainer = document.getElementById('itemsContainer');
     const addItemBtn = document.getElementById('addItemBtn');
     const invoiceForm = document.getElementById('invoiceForm');
@@ -245,6 +251,29 @@ document.addEventListener('DOMContentLoaded', () => {
         html2pdf().set(opt).from(element).save().then(() => {
             downloadBtn.textContent = originalText;
             downloadBtn.disabled = false;
+
+            // Fatura numarasını arttır ve kaydet
+            let currentNoStr = invoiceNo;
+            // Sadece sayısal kısmı almayı deneyelim veya direkt sayıya çevirelim
+            // Eğer numara tamamen sayıysa:
+            if (/^\d+$/.test(currentNoStr)) {
+                let nextNo = BigInt(currentNoStr) + 1n; // BigInt kullanıyoruz çünkü fatura no uzun olabilir
+                let nextNoStr = nextNo.toString();
+                
+                // Başındaki sıfırları korumak isterseniz (örn: 001 -> 002)
+                if (currentNoStr.length > nextNoStr.length) {
+                    nextNoStr = nextNoStr.padStart(currentNoStr.length, '0');
+                }
+
+                document.getElementById('invoiceNo').value = nextNoStr;
+                localStorage.setItem('nextInvoiceNo', nextNoStr);
+                updatePreview(); // Yeni numara ile önizlemeyi güncelle
+            } else {
+                // Eğer içinde harf varsa basitçe sonundaki sayıyı bulup arttırmaya çalışabiliriz
+                // Şimdilik sadece basit sayısal artış yapalım, karmaşık formatlar için regex gerekebilir
+                console.log("Fatura no sayısal değil, otomatik artırılmadı.");
+            }
+
         }).catch(err => {
             console.error(err);
             alert('PDF Hatası: ' + err.message);
