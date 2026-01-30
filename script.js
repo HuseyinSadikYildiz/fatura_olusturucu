@@ -25,6 +25,8 @@ function fillInvoiceForm(data) {
     // Müşteri bilgileri
     document.getElementById('clientName').value = data.customerName || '';
     document.getElementById('clientAddress').value = data.address || '';
+    document.getElementById('clientPhone').value = data.phone || '';      // ✅ EKLENEN
+    document.getElementById('clientTax').value = data.tcKimlik || '';     // ✅ EKLENEN
     
     // Bugünün tarihi
     document.getElementById('invoiceDate').valueAsDate = new Date();
